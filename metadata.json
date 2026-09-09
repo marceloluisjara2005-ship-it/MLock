@@ -1,0 +1,6 @@
+{
+  "name": "MLock",
+  "description": "Panel de control personal y seguro para gestionar cuentas, notas, links, PDFs y apartados personalizados con Supabase y autenticación Google.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
