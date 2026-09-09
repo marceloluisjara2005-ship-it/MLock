@@ -8,7 +8,6 @@ import {
   FileCheck2, 
   Plus, 
   Trash2, 
-  Database, 
   Sparkles,
   ChevronRight,
   X
@@ -24,9 +23,6 @@ interface SidebarProps {
   onDeleteCategory: (id: string, name: string) => void;
   isOpenMobile: boolean;
   onCloseMobile: () => void;
-  isSupabaseMode: boolean;
-  onOpenConfig: () => void;
-  onOpenSqlModal: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -38,9 +34,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDeleteCategory,
   isOpenMobile,
   onCloseMobile,
-  isSupabaseMode,
-  onOpenConfig,
-  onOpenSqlModal,
 }) => {
   const mainNavItems = [
     { name: 'Todos', icon: Layers, countKey: 'Todos' },
@@ -228,43 +221,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <Plus className="w-3.5 h-3.5 text-violet-400 group-hover:scale-110 transition-transform" />
               <span>+ Añadir Apartado</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Footer: Database & RLS status */}
-        <div className="p-4 border-t border-zinc-900 bg-zinc-950/60 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <Database className="w-3.5 h-3.5 text-zinc-400" />
-              <span className="text-zinc-400 font-medium">Backend / Auth</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  isSupabaseMode ? 'bg-emerald-500 shadow-sm shadow-emerald-500/50' : 'bg-amber-500'
-                }`}
-              />
-              <span className="text-[11px] font-mono text-zinc-300">
-                {isSupabaseMode ? 'Supabase RLS' : 'Modo Demo'}
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-1.5 pt-1">
-            <button
-              id="open-sql-schema-btn"
-              onClick={onOpenSqlModal}
-              className="px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-[11px] font-medium text-zinc-300 text-center transition-colors border border-zinc-800/80 hover:border-zinc-700"
-            >
-              Esquema SQL
-            </button>
-            <button
-              id="open-config-btn"
-              onClick={onOpenConfig}
-              className="px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-[11px] font-medium text-zinc-300 text-center transition-colors border border-zinc-800/80 hover:border-zinc-700"
-            >
-              Configurar DB
             </button>
           </div>
         </div>

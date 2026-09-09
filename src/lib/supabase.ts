@@ -62,22 +62,49 @@ export function isSupabaseConnected(): boolean {
   return getSupabase() !== null;
 }
 
-// Google OAuth Login
-export async function signInWithGoogle() {
+// Email & Password Sign In
+export async function signInWithEmailPassword(email: string, password: string) {
   const supabase = getSupabase();
   if (!supabase) {
     throw new Error('Supabase no está configurado. Añade tu URL y Clave Anónima en la configuración.');
   }
 
-  const redirectUrl = window.location.origin;
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+// Email & Password Sign Up
+export async function signUpWithEmailPassword(email: string, password: string) {
+  const supabase = getSupabase();
+  if (!supabase) {
+    throw new Error('Supabase no está configurado. Añade tu URL y Clave Anónima en la configuración.');
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+// Magic Link (OTP) Sign In
+export async function signInWithMagicLink(email: string) {
+  const supabase = getSupabase();
+  if (!supabase) {
+    throw new Error('Supabase no está configurado. Añade tu URL y Clave Anónima en la configuración.');
+  }
+
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email,
     options: {
-      redirectTo: redirectUrl,
-      queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
-      },
+      emailRedirectTo: window.location.origin,
     },
   });
 

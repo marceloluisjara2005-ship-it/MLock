@@ -4,16 +4,14 @@ import {
   Search, 
   Plus, 
   FolderPlus, 
-  LogIn, 
   LogOut, 
   User as UserIcon, 
   SlidersHorizontal,
   X,
-  ShieldCheck,
-  ExternalLink
+  ShieldCheck
 } from 'lucide-react';
 import { UserProfile } from '../types';
-import { signInWithGoogle, signOut } from '../lib/supabase';
+import { signOut } from '../lib/supabase';
 
 interface NavbarProps {
   onOpenMobileSidebar: () => void;
@@ -26,8 +24,7 @@ interface NavbarProps {
   onOpenCreateItem: () => void;
   onOpenAddCategory: () => void;
   user: UserProfile | null;
-  isSupabaseMode: boolean;
-  onOpenConfig: () => void;
+  onLogout?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -41,35 +38,18 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCreateItem,
   onOpenAddCategory,
   user,
-  isSupabaseMode,
-  onOpenConfig,
+  onLogout,
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [authLoading, setAuthLoading] = useState(false);
-  const [authMessage, setAuthMessage] = useState<string | null>(null);
-
-  const handleGoogleLogin = async () => {
-    if (!isSupabaseMode) {
-      onOpenConfig();
-      return;
-    }
-
-    try {
-      setAuthLoading(true);
-      setAuthMessage(null);
-      await signInWithGoogle();
-    } catch (err: any) {
-      console.error('Login error:', err);
-      setAuthMessage(err.message || 'Error al iniciar sesión con Google');
-    } finally {
-      setAuthLoading(false);
-    }
-  };
 
   const handleSignOut = async () => {
     await signOut();
     setShowUserMenu(false);
-    window.location.reload();
+    if (onLogout) {
+      onLogout();
+    } else {
+      window.location.reload();
+    }
   };
 
   return (
@@ -197,7 +177,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <div className="px-3 py-2 border-b border-zinc-900 mb-1">
                       <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold mb-0.5">
                         <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>Autenticado con Google</span>
+                        <span>Sesión Autenticada</span>
                       </div>
                       <p className="text-xs font-medium text-zinc-200 truncate">{user.email}</p>
                       <p className="text-[10px] text-zinc-400 font-mono mt-0.5">ID: {user.id.substring(0, 12)}...</p>
@@ -214,37 +194,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                 )}
               </div>
-            ) : (
-              <button
-                id="google-login-btn"
-                onClick={handleGoogleLogin}
-                disabled={authLoading}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-medium border border-zinc-800/90 transition-all hover:border-zinc-700"
-                title="Iniciar sesión con Google OAuth vía Supabase"
-              >
-                {/* Google Icon SVG */}
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.14z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.27 21.36 7.36 24 12 24z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.16 0 9.97 0 12s.46 3.84 1.26 5.42l4.02-3.15z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.27 2.64 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                  />
-                </svg>
-                <span className="hidden sm:inline">Entrar con Google</span>
-                <span className="sm:hidden">Entrar</span>
-              </button>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
@@ -271,13 +221,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
         </div>
       </div>
-
-      {authMessage && (
-        <div className="mt-2 text-xs text-amber-400 bg-amber-950/40 border border-amber-800/50 px-3 py-1.5 rounded-lg flex items-center justify-between">
-          <span>{authMessage}</span>
-          <button onClick={() => setAuthMessage(null)} className="text-amber-300 ml-2">×</button>
-        </div>
-      )}
     </header>
   );
 };

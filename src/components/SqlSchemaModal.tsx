@@ -76,10 +76,10 @@ export const SqlSchemaModal: React.FC<SqlSchemaModalProps> = ({ isOpen, onClose 
           <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
             <div className="font-semibold text-cyan-300 flex items-center gap-1.5 mb-1">
               <BookOpen className="w-3.5 h-3.5" />
-              <span>3. Google Auth</span>
+              <span>3. Email Auth</span>
             </div>
             <p className="text-[11px] text-zinc-400 leading-normal">
-              En Authentication → Providers, activa <strong>Google</strong> con tus credenciales OAuth.
+              En Authentication → Providers, el proveedor <strong>Email</strong> viene listo para usar.
             </p>
           </div>
         </div>

@@ -6,11 +6,10 @@ import { ItemCard } from './components/ItemCard';
 import { CreateItemModal } from './components/CreateItemModal';
 import { AddCategoryModal } from './components/AddCategoryModal';
 import { ItemDetailModal } from './components/ItemDetailModal';
-import { SqlSchemaModal } from './components/SqlSchemaModal';
-import { SupabaseConfigModal } from './components/SupabaseConfigModal';
+import { AuthPage } from './components/AuthPage';
 import { EmptyState } from './components/EmptyState';
 import { MLockItem } from './types';
-import { AlertCircle, ShieldAlert, Sparkles, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 
 export default function App() {
   const {
@@ -19,7 +18,6 @@ export default function App() {
     categories,
     categoryCounts,
     user,
-    isSupabaseMode,
     loading,
     actionLoading,
     error,
@@ -34,17 +32,30 @@ export default function App() {
     deleteItem,
     addCategory,
     deleteCategory,
-    resetDemoData,
   } = useMLockData();
 
   // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [selectedItemForDetail, setSelectedItemForDetail] = useState<MLockItem | null>(null);
-  const [isSqlModalOpen, setIsSqlModalOpen] = useState(false);
-  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+  // If user session is checking on initial load
+  if (loading && !user) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-zinc-400">
+        <Loader2 className="w-8 h-8 animate-spin text-violet-500 mb-3" />
+        <p className="text-xs font-medium">Verificando sesión segura...</p>
+      </div>
+    );
+  }
+
+  // First page: AUTH PAGE if not logged in
+  if (!user) {
+    return <AuthPage />;
+  }
+
+  // Main Dashboard View (Only accessible once logged in)
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col lg:flex-row font-sans selection:bg-violet-600 selection:text-white">
       {/* Navigation Sidebar */}
@@ -57,9 +68,6 @@ export default function App() {
         onDeleteCategory={deleteCategory}
         isOpenMobile={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
-        isSupabaseMode={isSupabaseMode}
-        onOpenConfig={() => setIsConfigModalOpen(true)}
-        onOpenSqlModal={() => setIsSqlModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -75,8 +83,6 @@ export default function App() {
           onOpenCreateItem={() => setIsCreateOpen(true)}
           onOpenAddCategory={() => setIsAddCategoryOpen(true)}
           user={user}
-          isSupabaseMode={isSupabaseMode}
-          onOpenConfig={() => setIsConfigModalOpen(true)}
         />
 
         {/* Global Error Banner */}
@@ -92,33 +98,6 @@ export default function App() {
             >
               Descartar
             </button>
-          </div>
-        )}
-
-        {/* Informative Mode Tag (if in Demo Mode) */}
-        {!isSupabaseMode && (
-          <div className="mx-4 lg:mx-8 mt-3 px-3.5 py-2 rounded-xl bg-violet-950/20 border border-violet-900/30 text-xs text-violet-300 flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-violet-400 flex-shrink-0" />
-              <span>
-                <strong>Modo Demostración Activo:</strong> Puedes crear cuentas, notas, links, PDFs y apartados dinámicos con persistencia local.
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsSqlModalOpen(true)}
-                className="underline hover:text-violet-100 font-medium text-[11px]"
-              >
-                Ver SQL & RLS
-              </button>
-              <span>•</span>
-              <button
-                onClick={() => setIsConfigModalOpen(true)}
-                className="underline hover:text-violet-100 font-medium text-[11px]"
-              >
-                Conectar Supabase
-              </button>
-            </div>
           </div>
         )}
 
@@ -198,19 +177,6 @@ export default function App() {
         item={selectedItemForDetail}
         onClose={() => setSelectedItemForDetail(null)}
         onDelete={deleteItem}
-      />
-
-      {/* Supabase SQL Schema & RLS Modal */}
-      <SqlSchemaModal
-        isOpen={isSqlModalOpen}
-        onClose={() => setIsSqlModalOpen(false)}
-      />
-
-      {/* Supabase Connection Config Modal */}
-      <SupabaseConfigModal
-        isOpen={isConfigModalOpen}
-        onClose={() => setIsConfigModalOpen(false)}
-        onResetDemo={resetDemoData}
       />
     </div>
   );
